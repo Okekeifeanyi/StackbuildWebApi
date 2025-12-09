@@ -1,15 +1,25 @@
+﻿using StackBuilApi.Data; // ✅ Add this at the top of Program.cs
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Add services
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Call DI Extension
+builder.Configuration
+       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+       .AddEnvironmentVariables();
+
+var config = builder.Configuration;
+
+
+builder.Services.AddDependencies(config);
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure HTTP Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -17,9 +27,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
