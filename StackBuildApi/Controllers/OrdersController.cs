@@ -14,7 +14,7 @@ namespace StackBuildApi.Controllers
         [HttpPost]
         public async Task<IActionResult> PlaceOrder([FromBody] PlaceOrderDto dto)
         {
-            // you can obtain customer id from token if you have auth
+          
             var result = await _orderService.PlaceOrderAsync(dto);
 
             if (!result.Success)

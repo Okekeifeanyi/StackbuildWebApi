@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackBuildApi.Model", "Stac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackBuildApi.Utility", "StackBuilApi.Utility\StackBuildApi.Utility.csproj", "{15D5181C-F039-44E3-AEF2-5D3ECE8014DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StackBuildApi.Test", "StackBuildApi.Test\StackBuildApi.Test.csproj", "{6BA77E41-6BB6-4F41-ADD2-622C03CE65D7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{15D5181C-F039-44E3-AEF2-5D3ECE8014DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15D5181C-F039-44E3-AEF2-5D3ECE8014DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15D5181C-F039-44E3-AEF2-5D3ECE8014DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BA77E41-6BB6-4F41-ADD2-622C03CE65D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BA77E41-6BB6-4F41-ADD2-622C03CE65D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BA77E41-6BB6-4F41-ADD2-622C03CE65D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BA77E41-6BB6-4F41-ADD2-622C03CE65D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

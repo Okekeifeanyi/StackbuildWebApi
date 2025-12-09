@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using StackBuildApi.Core.Interface.irepositories;
 using StackBuildApi.Data.Database;
 using StackBuildApi.Data.Repositories;
 using StackBuildApi.Model.Entities;
@@ -17,6 +16,13 @@ namespace StackBuilApi.Data.Repositories
         {
             return await _context.Products
                 .Where(x => ids.Contains(x.Id))
+                .ToListAsync();
+        }
+        public async Task<List<Product>> GetByIdsForUpdateAsync(List<Guid> ids)
+        {
+            return await _context.Products
+                .Where(x => ids.Contains(x.Id))
+                .TagWith("FOR UPDATE") 
                 .ToListAsync();
         }
 

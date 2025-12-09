@@ -9,7 +9,7 @@ builder.Services.AddSwaggerGen();
 
 // Call DI Extension
 builder.Configuration
-       .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+       .AddJsonFile("appsettings.json")
        .AddEnvironmentVariables();
 
 var config = builder.Configuration;
@@ -18,7 +18,7 @@ builder.Services.AddDataDependencies(config);
 
 var app = builder.Build();
 
-// Configure HTTP Pipeline
+// Configure HTTP Pipelinegit add
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

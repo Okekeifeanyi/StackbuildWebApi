@@ -3,6 +3,7 @@ using StackBuildApi.Core.DTO;
 using StackBuildApi.Core.Interface.irepositories;
 using StackBuildApi.Domain.Entities;
 using StackBuildApi.Model.Entities;
+using Microsoft.EntityFrameworkCore;
 
 public class OrderService : IOrderService
 {
@@ -12,19 +13,20 @@ public class OrderService : IOrderService
     {
         _uow = uow;
     }
-    public async Task<(bool Success, string? Error, OrderResponseDto? Order)>
-        PlaceOrderAsync(PlaceOrderDto dto)
+
+    public async Task<(bool Success, string? Error, OrderResponseDto? Order)> PlaceOrderAsync(PlaceOrderDto dto)
     {
         await using var transaction = await _uow.BeginTransactionAsync();
         try
         {
             var productIds = dto.Items.Select(i => i.ProductId).ToList();
-            var products = await _uow.ProductRepository.GetByIdsAsync(productIds);
+
+            var products = await _uow.ProductRepository.GetByIdsForUpdateAsync(productIds);
 
             if (products.Count != productIds.Count)
                 return (false, "One or more products not found.", null);
-            
-            // Validate stock
+
+         
             foreach (var item in dto.Items)
             {
                 var product = products.First(p => p.Id == item.ProductId);
@@ -32,7 +34,6 @@ public class OrderService : IOrderService
                     return (false, $"Insufficient stock for {product.Name}.", null);
             }
 
-            // Create order
             var order = new Order();
             foreach (var item in dto.Items)
             {
@@ -43,17 +44,17 @@ public class OrderService : IOrderService
                     ProductId = product.Id,
                     Quantity = item.Quantity,
                     UnitPrice = product.Price
-                    // SubTotal calculated by property
                 });
 
                 product.StockQuantity -= item.Quantity;
                 _uow.ProductRepository.Update(product);
             }
 
-            order.Total = order.Items.Sum(i => i.SubTotal);
 
+            order.Total = order.Items.Sum(i => i.SubTotal);
             await _uow.OrderRepository.AddAsync(order);
             await _uow.SaveChangesAsync();
+
             await transaction.CommitAsync();
 
             var response = new OrderResponseDto(
@@ -69,11 +70,10 @@ public class OrderService : IOrderService
 
             return (true, null, response);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            throw; // or return (false, ex.Message, null);
+            return (false, ex.Message, null);
         }
     }
 }
-

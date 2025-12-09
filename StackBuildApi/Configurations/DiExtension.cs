@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using StackBuilApi.Core.Interface.irepositories;
 using StackBuilApi.Core.Interface.iservices;
 using StackBuilApi.Data.Repositories;
@@ -16,11 +14,9 @@ namespace StackBuildApi.Configurations
     {
         public static void AddDataDependencies(this IServiceCollection services, IConfiguration config)
         {
-            // Configure DbContext to use PostgreSQL
+        
             services.AddDbContext<StackBuildDB>(options =>
                 options.UseNpgsql(config.GetConnectionString("stackbuild")));
-
-            // Registerations
          
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductService, ProductService>();
