@@ -1,4 +1,4 @@
-﻿using StackBuilApi.Data; // ✅ Add this at the top of Program.cs
+﻿using StackBuildApi.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +14,7 @@ builder.Configuration
 
 var config = builder.Configuration;
 
-
-builder.Services.AddDependencies(config);
+builder.Services.AddDataDependencies(config);
 
 var app = builder.Build();
 

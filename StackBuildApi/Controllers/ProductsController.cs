@@ -9,6 +9,7 @@ namespace StackBuildApi.Controllers
     public class ProductsController : ControllerBase
     {
         private readonly IProductService _svc;
+        
         public ProductsController(IProductService svc) => _svc = svc;
 
         [HttpGet]

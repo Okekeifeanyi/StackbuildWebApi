@@ -1,10 +1,9 @@
-﻿using StackBuilApi.Core.Interface.irepositories;
+﻿using Microsoft.EntityFrameworkCore;
+using StackBuilApi.Core.Interface.irepositories;
 using StackBuildApi.Model.Entities;
 
-namespace StackBuildApi.Core.Interface.irepositories
+public interface IProductRepository : IGenericRepository<Product>
 {
-    public interface IProductRepository : IGenericRepository<Product>
-    {
-       
-    }
+    Task<List<Product>> GetByIdsAsync(List<Guid> ids);
+    
 }

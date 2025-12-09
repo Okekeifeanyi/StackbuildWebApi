@@ -39,7 +39,7 @@ namespace StackBuildApi.Data.Repositories
             return await _stackBuildDB.Set<T>().ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(string id)
+        public async Task<T?> GetByIdAsync(Guid id)
         {
             return await _stackBuildDB.Set<T>().FindAsync(id);
         }

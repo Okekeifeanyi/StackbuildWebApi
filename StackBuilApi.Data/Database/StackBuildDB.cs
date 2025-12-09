@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using StackBuildApi.Domain.Entities;
 using StackBuildApi.Model.Entities;
 
 namespace StackBuildApi.Data.Database

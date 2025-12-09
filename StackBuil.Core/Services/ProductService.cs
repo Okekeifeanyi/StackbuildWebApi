@@ -1,4 +1,5 @@
-﻿using StackBuilApi.Core.Interface.iservices;
+﻿using Microsoft.EntityFrameworkCore;
+using StackBuilApi.Core.Interface.iservices;
 using StackBuildApi.Core.DTO;
 using StackBuildApi.Core.Interface.irepositories;
 using StackBuildApi.Model.Entities;
@@ -23,7 +24,9 @@ namespace StackBuildApi.Services
         public async Task<ProductDto?> GetByIdAsync(Guid id)
         {
             var p = await _uow.ProductRepository.GetByIdAsync(id);
-            return p == null ? null : new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity);
+            if (p == null) return null;
+
+            return new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity);
         }
 
         public async Task<ProductDto> CreateAsync(CreateProductDto dto)
@@ -42,6 +45,7 @@ namespace StackBuildApi.Services
 
             return new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity);
         }
+
 
         public async Task<ProductDto?> UpdateAsync(UpdateProductDto dto)
         {

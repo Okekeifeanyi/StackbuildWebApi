@@ -13,7 +13,7 @@ namespace StackBuilApi.Core.Interface.irepositories
         void DeleteRange(IEnumerable<T> entities);
         Task<T?> FindSingleAsync(Expression<Func<T, bool>> expression);
         Task<List<T>> GetAllAsync();
-        Task<T?> GetByIdAsync(string id);
+        Task<T?> GetByIdAsync(Guid id);
         Task<int> SaveChangesAsync();
         IQueryable<T> AsQueryable();
         void Update(T entity);
