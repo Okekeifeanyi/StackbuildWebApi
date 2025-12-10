@@ -1,7 +1,7 @@
 ﻿using StackBuildApi.Core.DTO;
+using StackBuildApi.Model;
 
 public interface IOrderService
 {
-    Task<(bool Success, string? Error, OrderResponseDto? Order)>
-        PlaceOrderAsync(PlaceOrderDto dto);
+    Task<ApiResponse<OrderResponseDto>> PlaceOrderAsync(PlaceOrderDto dto);
 }

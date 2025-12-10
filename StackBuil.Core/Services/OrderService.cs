@@ -1,9 +1,9 @@
-﻿using StackBuilApi.Core.Interface.iservices;
+﻿using Microsoft.EntityFrameworkCore;
 using StackBuildApi.Core.DTO;
 using StackBuildApi.Core.Interface.irepositories;
 using StackBuildApi.Domain.Entities;
+using StackBuildApi.Model;
 using StackBuildApi.Model.Entities;
-using Microsoft.EntityFrameworkCore;
 
 public class OrderService : IOrderService
 {
@@ -14,7 +14,7 @@ public class OrderService : IOrderService
         _uow = uow;
     }
 
-    public async Task<(bool Success, string? Error, OrderResponseDto? Order)> PlaceOrderAsync(PlaceOrderDto dto)
+    public async Task<ApiResponse<OrderResponseDto>> PlaceOrderAsync(PlaceOrderDto dto)
     {
         await using var transaction = await _uow.BeginTransactionAsync();
         try
@@ -24,14 +24,19 @@ public class OrderService : IOrderService
             var products = await _uow.ProductRepository.GetByIdsForUpdateAsync(productIds);
 
             if (products.Count != productIds.Count)
-                return (false, "One or more products not found.", null);
+            {
+                await transaction.RollbackAsync();
+                return ApiResponse<OrderResponseDto>.Failed("One or more products not found.", 400);
+            }
 
-         
             foreach (var item in dto.Items)
             {
                 var product = products.First(p => p.Id == item.ProductId);
                 if (product.StockQuantity < item.Quantity)
-                    return (false, $"Insufficient stock for {product.Name}.", null);
+                {
+                    await transaction.RollbackAsync();
+                    return ApiResponse<OrderResponseDto>.Failed($"Insufficient stock for {product.Name}.", 400);
+                }
             }
 
             var order = new Order();
@@ -46,15 +51,13 @@ public class OrderService : IOrderService
                     UnitPrice = product.Price
                 });
 
-                product.StockQuantity -= item.Quantity;
-                _uow.ProductRepository.Update(product);
+                product.StockQuantity -= item.Quantity; 
             }
 
-
             order.Total = order.Items.Sum(i => i.SubTotal);
+
             await _uow.OrderRepository.AddAsync(order);
             await _uow.SaveChangesAsync();
-
             await transaction.CommitAsync();
 
             var response = new OrderResponseDto(
@@ -68,12 +71,17 @@ public class OrderService : IOrderService
                 }).ToList()
             );
 
-            return (true, null, response);
+            return ApiResponse<OrderResponseDto>.Success(response, "Order placed successfully.", 201);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync();
+            return ApiResponse<OrderResponseDto>.Failed("Stock changed. Please try again.", 409);
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            return (false, ex.Message, null);
+            return ApiResponse<OrderResponseDto>.Failed(ex.Message, 500);
         }
     }
 }

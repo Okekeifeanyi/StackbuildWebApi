@@ -29,6 +29,11 @@ namespace StackBuildApi.Data.Database
                 .WithMany()
                 .HasForeignKey(oi => oi.ProductId);
 
+            modelBuilder.Entity<Product>()
+    .Property(p => p.RowVersion)
+    .IsRowVersion();
+
+
             modelBuilder.Entity<Order>()
                 .HasMany(o => o.Items)
                 .WithOne(i => i.Order)

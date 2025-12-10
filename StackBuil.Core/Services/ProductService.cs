@@ -3,6 +3,7 @@ using StackBuilApi.Core.Interface.iservices;
 using StackBuildApi.Core.DTO;
 using StackBuildApi.Core.Interface.irepositories;
 using StackBuildApi.Model.Entities;
+using StackBuildApi.Model;
 
 namespace StackBuildApi.Services
 {
@@ -15,21 +16,24 @@ namespace StackBuildApi.Services
             _uow = uow;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllAsync()
+        public async Task<ApiResponse<IEnumerable<ProductDto>>> GetAllAsync()
         {
             var products = await _uow.ProductRepository.GetAllAsync();
-            return products.Select(p => new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity));
+            var data = products.Select(p => new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity));
+            return ApiResponse<IEnumerable<ProductDto>>.Success(data, "Products retrieved", 200);
         }
 
-        public async Task<ProductDto?> GetByIdAsync(Guid id)
+        public async Task<ApiResponse<ProductDto?>> GetByIdAsync(Guid id)
         {
             var p = await _uow.ProductRepository.GetByIdAsync(id);
-            if (p == null) return null;
+            if (p == null)
+                return ApiResponse<ProductDto?>.Failed("Product not found", 404);
 
-            return new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity);
+            var data = new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity);
+            return ApiResponse<ProductDto?>.Success(data, "Product retrieved", 200);
         }
 
-        public async Task<ProductDto> CreateAsync(CreateProductDto dto)
+        public async Task<ApiResponse<ProductDto>> CreateAsync(CreateProductDto dto)
         {
             var p = new Product
             {
@@ -43,14 +47,15 @@ namespace StackBuildApi.Services
             await _uow.ProductRepository.AddAsync(p);
             await _uow.SaveChangesAsync();
 
-            return new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity);
+            var data = new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity);
+            return ApiResponse<ProductDto>.Success(data, "Product created", 201);
         }
 
-
-        public async Task<ProductDto?> UpdateAsync(UpdateProductDto dto)
+        public async Task<ApiResponse<ProductDto?>> UpdateAsync(UpdateProductDto dto)
         {
             var p = await _uow.ProductRepository.GetByIdAsync(dto.Id);
-            if (p == null) return null;
+            if (p == null)
+                return ApiResponse<ProductDto?>.Failed("Product not found", 404);
 
             p.Name = dto.Name;
             p.Description = dto.Description;
@@ -60,17 +65,20 @@ namespace StackBuildApi.Services
             _uow.ProductRepository.Update(p);
             await _uow.SaveChangesAsync();
 
-            return new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity);
+            var data = new ProductDto(p.Id, p.Name, p.Description, p.Price, p.StockQuantity);
+            return ApiResponse<ProductDto?>.Success(data, "Product updated", 200);
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public async Task<ApiResponse<string>> DeleteAsync(Guid id)
         {
             var p = await _uow.ProductRepository.GetByIdAsync(id);
-            if (p == null) return false;
+            if (p == null)
+                return ApiResponse<string>.Failed("Product not found", 404);
 
             _uow.ProductRepository.Delete(p);
             await _uow.SaveChangesAsync();
-            return true;
+
+            return ApiResponse<string>.Success("Product deleted", "Deleted", 200);
         }
     }
 }

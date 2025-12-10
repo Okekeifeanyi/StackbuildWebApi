@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using StackBuilApi.Core.Interface.iservices;
 using StackBuildApi.Core.DTO;
+using StackBuildApi.Model;
 
 namespace StackBuildApi.Controllers
 {
@@ -14,13 +15,8 @@ namespace StackBuildApi.Controllers
         [HttpPost]
         public async Task<IActionResult> PlaceOrder([FromBody] PlaceOrderDto dto)
         {
-          
-            var result = await _orderService.PlaceOrderAsync(dto);
-
-            if (!result.Success)
-                return BadRequest(new { error = result.Error });
-
-            return CreatedAtAction(null, new { id = result.Order!.OrderId }, result.Order);
+            var response = await _orderService.PlaceOrderAsync(dto);
+            return StatusCode(response.StatusCode, response);
         }
     }
 }
