@@ -13,7 +13,7 @@ namespace StackBuildApi.Controllers
 
         public ProductsController(IProductService svc) => _svc = svc;
 
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
             var response = await _svc.GetAllAsync();
